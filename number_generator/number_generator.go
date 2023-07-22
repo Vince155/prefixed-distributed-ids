@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/klauspost/cpuid/v2"
 )
@@ -47,7 +48,25 @@ func generateRandomNumbers(idLength int) (string, error) {
     return string(buffer), nil
 }
 
-func generateBytes() ([]byte, error) {
+func InitializeCounter() (int, error) {
+    cLength := 3
+
+    strNumbers, err := generateRandomNumbers(cLength)
+
+    if err != nil {
+        return -1, err
+    }
+
+    num, err := strconv.Atoi(strNumbers)
+
+    if err != nil {
+        return -1, err
+    }
+
+    return num, nil
+}
+
+func GenerateBytes() ([]byte, error) {
     idLength := 6
 	randomValue, err := generateRandomNumbers(idLength)
 
