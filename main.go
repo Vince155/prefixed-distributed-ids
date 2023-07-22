@@ -12,9 +12,7 @@ func main() {
 		panic(err)
 	}
 
-	flag := true
-
-	for flag {
+	for counter < 1000 {
 		counter++
 	}
 
