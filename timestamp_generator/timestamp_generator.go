@@ -1,15 +1,15 @@
 package timestamp_generator
 
 import (
-    "time"
-    "encoding/binary"
+	"encoding/binary"
+	"time"
 )
 
-func generateTimestampNumber() []byte {
+func GenerateTimestampNumber() ([]byte, int64) {
     now := time.Now()
     timestamp := now.Unix()
     buffer := make([]byte, 4)
-    binary.BigEndian.PutUint64(buffer, uint64(timestamp))
+    binary.BigEndian.PutUint32(buffer, uint32(timestamp))
 
-    return buffer
+    return buffer, timestamp
 }
