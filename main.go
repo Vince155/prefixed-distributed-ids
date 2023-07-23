@@ -2,20 +2,21 @@ package main
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"prefixed-distributed-ids/number_generator"
 	"prefixed-distributed-ids/timestamp_generator"
 )
 
 func main() {
-	idBytes, id, timestamp := BuildId()
-
-    fmt.Printf("bytes are %x\n", idBytes)
-    fmt.Printf("timestamp is %d\n", timestamp)
-    fmt.Printf("id is %s\n", id)
+    
 }
 
-func BuildId() ([]byte, string, int64) {
+func BuildId(prefix string) ([]byte, string, int64, error) {
+    if len(prefix) > 8 {
+        return []byte{}, "", -1, errors.New("please use a prefix shorter than 9 characters")
+    }
+
     var idBytes []byte
     tBuffer, timestamp := timestamp_generator.GenerateTimestampNumber()
 
@@ -39,6 +40,7 @@ func BuildId() ([]byte, string, int64) {
 
     idBytes = append(idBytes, counterBuffer[0], counterBuffer[1])
     id := fmt.Sprintf("%x", idBytes)
+    prefixedId := prefix + "_" + id
 
-    return idBytes, id, timestamp
+    return idBytes, prefixedId, timestamp, nil
 }
