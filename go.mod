@@ -1,4 +1,4 @@
-module prefixed-distributed-ids
+module github.com/Vince155/prefixed-distributed-ids
 
 go 1.18
 
