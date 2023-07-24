@@ -1,4 +1,4 @@
-package number_generator
+package numgen
 
 import (
 	"testing"

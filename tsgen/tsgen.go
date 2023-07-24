@@ -1,4 +1,4 @@
-package timestamp_generator
+package tsgen
 
 import (
 	"encoding/binary"
