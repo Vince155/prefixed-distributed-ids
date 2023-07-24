@@ -4,12 +4,21 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"prefixed-distributed-ids/number_generator"
-	"prefixed-distributed-ids/timestamp_generator"
+
+	"github.com/Vince155/prefixed-distributed-ids/number_generator"
+	"github.com/Vince155/prefixed-distributed-ids/timestamp_generator"
 )
 
 func main() {
-    
+    b, s, t, err := BuildId("test")
+
+    if err != nil {
+        fmt.Println(err)
+    }
+
+    fmt.Printf("str %s\n", s)
+    fmt.Printf("byte %s\n", b)
+    fmt.Printf("ts %d\n", t)
 }
 
 func BuildId(prefix string) ([]byte, string, int64, error) {
