@@ -6,8 +6,8 @@ import (
 )
 
 func GenerateTimestampNumber() ([]byte, int64) {
-    now := time.Now()
-    timestamp := now.Unix()
+    now := time.Now().UTC()
+    timestamp := now.UnixMilli()
     buffer := make([]byte, 4)
     binary.BigEndian.PutUint32(buffer, uint32(timestamp))
 
