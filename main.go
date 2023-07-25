@@ -9,13 +9,21 @@ import (
 	"github.com/Vince155/prefixed-distributed-ids/tsgen"
 )
 
-func BuildId(prefix string) ([]byte, string, int64, error) {
+const maxCounter uint = 999
+
+type PrefId struct {
+    ByteArr []byte
+    Id string
+    Ts int64
+}
+
+func BuildId(prefix string) (*PrefId, error) {
     if len(prefix) > 8 {
-        return []byte{}, "", -1, errors.New("please use a prefix shorter than 9 characters")
+        return nil, errors.New("please use a prefix shorter than 9 characters")
     }
 
     if len(prefix) == 0 {
-        return []byte{}, "", -1, errors.New("please enter a prefix")
+        return nil, errors.New("please enter a prefix")
     }
 
     var idBytes []byte
@@ -40,8 +48,10 @@ func BuildId(prefix string) ([]byte, string, int64, error) {
 	}
 
     idBytes = append(idBytes, counterBuffer[0], counterBuffer[1])
-    id := fmt.Sprintf("%x", idBytes)
-    prefixedId := prefix + "_" + id
+    strid := fmt.Sprintf("%x", idBytes)
+    prefixedId := prefix + "_" + strid
 
-    return idBytes, prefixedId, timestamp, nil
+    prefid := &PrefId{idBytes, prefixedId, timestamp}
+
+    return prefid, nil
 }
