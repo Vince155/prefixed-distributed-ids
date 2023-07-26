@@ -60,3 +60,20 @@ func TestNextIdCanBeGenerated(t *testing.T) {
 	assert.NotEqual(t, nextId.Ts, prefid.Ts, "The two IDs should have unique timestamps")
 	assert.Equal(t, err, nil, "Error should be nil")
 }
+
+func TestEachIdIsUniqueToTheLast(t *testing.T) {
+	pfix := "Test"
+	prefid, _ := BuildId(pfix)
+
+	nextId, _ := prefid.NextId(pfix)
+	nextNextId, _ := nextId.NextId(pfix)
+
+	assert.NotEqual(t, nextId.Id, prefid.Id, "The first two IDs should have unique strings")
+	assert.NotEqual(t, nextId.Ts, prefid.Ts, "The first two IDs should have unique timestamps")
+
+	assert.NotEqual(t, nextId.Id, nextNextId.Id, "The last two IDs should have unique strings")
+	assert.NotEqual(t, nextId.Ts, nextNextId.Ts, "The last two IDs should have unique timestamps")
+
+	assert.NotEqual(t, nextNextId.Id, prefid.Id, "The first and last IDs should have unique strings")
+	assert.NotEqual(t, nextNextId.Ts, prefid.Ts, "The first and last IDs should have unique timestamps")
+}
