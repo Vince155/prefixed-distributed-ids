@@ -34,7 +34,7 @@ func (prefid *PrefId) NextId(prefix string) (*PrefId, error) {
     cterBuffer := make([]byte, 2)
 	binary.BigEndian.PutUint16(cterBuffer, uint16(counter))
     tBuffer, cts := tsgen.GenerateTimestampNumber()
-
+    lts = prefid.Ts
 
     if cts < lts {
         return nil, errors.New("invalid timestamp")
@@ -43,8 +43,6 @@ func (prefid *PrefId) NextId(prefix string) (*PrefId, error) {
     if cts == lts {
         tBuffer, cts = waitNextMill()
     }
-
-    lts = cts
 
     idBytes := prefid.ByteArr
 
@@ -58,11 +56,13 @@ func (prefid *PrefId) NextId(prefix string) (*PrefId, error) {
     strid := fmt.Sprintf("%x", idBytes)
     prefixedId := prefix + "_" + strid
 
-    prefid.ByteArr = idBytes
-    prefid.Id = prefixedId
-    prefid.Ts = cts
+    newPrefid := &PrefId{
+        Id: prefixedId,
+        Ts: cts,
+        ByteArr: idBytes,
+    }
 
-    return prefid, nil
+    return newPrefid, nil
 }
 
 func BuildId(prefix string) (*PrefId, error) {

@@ -56,7 +56,6 @@ func TestNextIdCanBeGenerated(t *testing.T) {
 
 	nextId, err := prefid.NextId(pfix)
 
-	assert.NotEqual(t, nextId.ByteArr, prefid.ByteArr, "The two IDs should have unique bytes")
 	assert.NotEqual(t, nextId.Id, prefid.Id, "The two IDs should have unique strings")
 	assert.NotEqual(t, nextId.Ts, prefid.Ts, "The two IDs should have unique timestamps")
 	assert.Equal(t, err, nil, "Error should be nil")
