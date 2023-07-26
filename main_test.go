@@ -8,44 +8,72 @@ import (
 
 func TestPrefixIdIsGenerated(t *testing.T) {
 	pfix := "test"
-	b, str, ts, err := BuildId(pfix)
+	prefix, err := BuildId(pfix)
 
 	assert.Equal(t, err, nil, "Error should be nil")
-	assert.Greater(t, ts, int64(0), "timestamp should be current")
-	assert.NotEqual(t, b, []byte{}, "Bytes should not be empty")
-	assert.Contains(t, str, "test_", "Resulting ID should contain 'test_'")
+	assert.Greater(t, prefix.Ts, int64(0), "timestamp should be current")
+	assert.NotEqual(t, prefix.ByteArr, []byte{}, "Bytes should not be empty")
+	assert.Contains(t, prefix.Id, "test_", "Resulting ID should contain 'test_'")
 }
 
 func TestIDsAreUnique(t *testing.T) {
 	pfix := "test"
-	_, str1, _, _ := BuildId(pfix)
-	_, str2, _, _ := BuildId(pfix)
+	prefix1, _ := BuildId(pfix)
+	prefix2, _ := BuildId(pfix)
 
-	assert.NotEqual(t, str1, str2, "The strings should be unique")
+	assert.NotEqual(t, prefix1.Id, prefix2.Id, "The strings should be unique")
 }
 
 func TestIDsContainGivenPrefix(t *testing.T) {
 	pfix := "foo"
-	_, str1, _, _ := BuildId(pfix)
+	prefix1, _ := BuildId(pfix)
 	pfix = "bar"
-	_, str2, _, _ := BuildId(pfix)
+	prefix2, _ := BuildId(pfix)
 
-	assert.Contains(t, str1, "foo", "First ID should contain 'foo'")
-	assert.NotContains(t, str1, "bar", "First ID should not contain 'bar'")
-	assert.Contains(t, str2, "bar", "Second ID should contain 'bar'")
-	assert.NotContains(t, str2, "foo", "Second ID should not contain 'foo'")
+	assert.Contains(t, prefix1.Id, "foo", "First ID should contain 'foo'")
+	assert.NotContains(t, prefix1.Id, "bar", "First ID should not contain 'bar'")
+	assert.Contains(t, prefix2.Id, "bar", "Second ID should contain 'bar'")
+	assert.NotContains(t, prefix2.Id, "foo", "Second ID should not contain 'foo'")
 }
 
 func TestPrefixMustBeShorterThan9Characters(t *testing.T) {
 	pfix := "Superlongprefix"
-	_, _, _, err := BuildId(pfix)
+	_, err := BuildId(pfix)
 
 	assert.Equal(t, err.Error(), "please use a prefix shorter than 9 characters", "The two error message are equal")
 }
 
 func TestPrefixMustExist(t *testing.T) {
 	pfix := ""
-	_, _, _, err := BuildId(pfix)
+	_, err := BuildId(pfix)
 
 	assert.Equal(t, err.Error(), "please enter a prefix", "The two error message are equal")
+}
+
+func TestNextIdCanBeGenerated(t *testing.T) {
+	pfix := "Test"
+	prefid, _ := BuildId(pfix)
+
+	nextId, err := prefid.NextId(pfix)
+
+	assert.NotEqual(t, nextId.Id, prefid.Id, "The two IDs should have unique strings")
+	assert.NotEqual(t, nextId.Ts, prefid.Ts, "The two IDs should have unique timestamps")
+	assert.Equal(t, err, nil, "Error should be nil")
+}
+
+func TestEachIdIsUniqueToTheLast(t *testing.T) {
+	pfix := "Test"
+	prefid, _ := BuildId(pfix)
+
+	nextId, _ := prefid.NextId(pfix)
+	nextNextId, _ := nextId.NextId(pfix)
+
+	assert.NotEqual(t, nextId.Id, prefid.Id, "The first two IDs should have unique strings")
+	assert.NotEqual(t, nextId.Ts, prefid.Ts, "The first two IDs should have unique timestamps")
+
+	assert.NotEqual(t, nextId.Id, nextNextId.Id, "The last two IDs should have unique strings")
+	assert.NotEqual(t, nextId.Ts, nextNextId.Ts, "The last two IDs should have unique timestamps")
+
+	assert.NotEqual(t, nextNextId.Id, prefid.Id, "The first and last IDs should have unique strings")
+	assert.NotEqual(t, nextNextId.Ts, prefid.Ts, "The first and last IDs should have unique timestamps")
 }
